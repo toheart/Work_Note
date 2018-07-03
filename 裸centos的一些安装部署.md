@@ -132,10 +132,56 @@ yum -y install gcc gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel
 
 ## 6、设置系统时间
 
-第一种方式，设置时区：
+下载工具：ntp
 
-​	1、 timedatectl set-timezone Asia/Shanghai 
+```shell 
+yum -y install ntp
+ntpdate -u asia.pool.ntp.org
+rm -rf /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+```
 
-第二种方式，直接拷贝文件：
 
-​	2、cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime 
+
+## 7、设置supervisor为开机自启动
+
+1、vim /lib/systemd/system/supervisord.service 
+
+2、
+
+```vim
+[Unit]
+Description=Process Monitoring and Control Daemon
+After=rc-local.service
+
+
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+ExecReload=supervisorctl reload
+
+
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+3、systemctl enable supervisord.service 
+
+
+
+## 8、mysql远程授权访问
+
+```shell
+ GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "password";
+ flush privileges;
+
+ 
+[mysqld] 
+skip_name_resolve 
+
+```
+
